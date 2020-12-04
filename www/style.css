@@ -1,0 +1,111 @@
+:root {
+    --ElementBorder                             : solid #8B4516 1px;
+
+    --ElementBackground                         : #DBB469;
+    --ElementLightBackground                    : #E4CA96;
+    --ElementGradientBackground                 : linear-gradient(#DBB469, #E4CA96 75%);
+    --ElementFontColor                          : #2222A0;
+    --ElementFontFamily                         : Segoe UI;
+}
+
+.TitleBar {
+    position                                    : absolute;
+    top                                         : 0px;
+    left                                        : 0px;
+    right                                       : 0px;
+    height                                      : 25px;
+    font-family                                 : var(--ElementFontFamily);
+    font-weight                                 : bold;
+    padding-left                                : 5px;
+    background                                  : var(--ElementGradientBackground);
+}
+
+#MainArea {
+    position                                    : absolute;
+    top                                         : 30px;
+    left                                        : 220px;
+    right                                       : 10px;
+    bottom                                      : 30px;
+    border                                      : var(--ElementBorder);
+    background                                  : var(--ElementBackground);
+}
+
+#MainDrawArea {
+    position                                    : absolute;
+    top                                         : 2px;
+    bottom                                      : 25px;
+    left                                        : 2px;
+    right                                       : 2px;
+    border                                      : var(--ElementBorder);
+    background                                  : white;
+    border-radius                               : 5px;
+}
+
+#MainInputArea {
+    position                                    : absolute;
+    bottom                                      : 3px;
+    left                                        : 2px;
+    right                                       : 2px;
+    height                                      : 20px;
+    background                                  : white;
+}
+
+#MainInput {
+    position                                    : absolute;
+    top                                         : 0px;
+    height                                      : 20px;
+    width                                       : 100%;
+    left                                        : 0px;
+    font-family                                 : var(--ElementFontFamily);
+    font-size                                   : 15px;
+}
+
+#MainInfoArea {
+    position                                    : absolute;
+    top                                         : 10px;
+    left                                        : 220px;
+    height                                      : 25px;
+    right                                       : 10px;
+    border                                      : var(--ElementBorder);
+    color                                       : var(--ElementFontColor);
+    background                                  : var(--ElementGradientBackground);
+    font-family                                 : Segoe UI;
+    font-size                                   : 12pt;
+    font-weight                                 : 600;
+    padding-left                                : 5px;
+}
+
+#ElementsArea {
+    position                                    : absolute;
+    top                                         : 10px;
+    left                                        : 10px;
+    width                                       : 200px;
+    bottom                                      : 30px;
+    color                                       : var(--ElementFontColor);
+    background                                  : var(--ElementLightBackground);
+    border                                      : var(--ElementBorder);
+}
+
+#MessageArea {
+    position                                    : absolute;
+    height                                      : 20px;
+    bottom                                      : 5px;
+    left                                        : 10px;
+    right                                       : 10px;
+    border                                      : var(--ElementBorder);
+    color                                       : var(--ElementFontColor);
+    font-family                                 : Segoe UI;
+    font-size                                   : 11pt;
+    font-weight                                 : 600;
+    padding-left                                : 5px;
+}
+
+#MainBlocker {
+    position                                    : absolute;
+    left                                        : 10px;
+    top                                         : 10px;
+    right                                       : 10px;
+    bottom                                      : 30px;
+    background-image                            : url("BlockerBackground2.png");
+    opacity                                     : .5
+}
