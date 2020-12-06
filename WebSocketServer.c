@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -31,6 +32,7 @@
 #include "JSONIF.h"
 #include "JSONOut.h"
 #include "HTTPServer.h"
+#include "WebConnection.h"
 
 /*****************************************************************************!
  * Local Macros
@@ -58,6 +60,9 @@ WebSocketFrameSend
 /*****************************************************************************!
  * Local Data
  *****************************************************************************/
+static WebConnectionList*
+WebSocketConnections;
+
 static int
 WebSocketServerPollPeriod = 20;
 
@@ -92,6 +97,7 @@ void
 WebSocketServerInitialize
 ()
 {
+  WebSocketConnections = WebConnectionListCreate();
   WebSocketPortAddress = WebSocketPortAddressDefault;
   WebSocketWWWDirectory = WebSocketWWWDirectoryDefault;
 }
@@ -149,6 +155,7 @@ void
 WebSocketServerEventHandler
 (struct mg_connection* InConnection, int InEvent, void* InParameter)
 {
+  WebConnection*                        con;
   struct websocket_message*             message;
   
   if ( InEvent == 0 ) {
@@ -157,11 +164,17 @@ WebSocketServerEventHandler
 
   switch (InEvent) {
     case MG_EV_CLOSE : {
-      
+      con = WebConnectionListFind(WebSocketConnections, InConnection);
+      if ( con ) {
+        WebConnectionListRemove(WebSocketConnections, con);
+      }
       break;
     }
 
     case MG_EV_WEBSOCKET_FRAME : {
+      if ( NULL == WebConnectionListFind(WebSocketConnections, InConnection) ) {
+        WebConnectionListAppend(WebSocketConnections, WebConnectionCreate(InConnection));
+      }
       message = (struct websocket_message*)InParameter;
       WebSocketHandlePacket(InConnection, (string)message->data, message->size);
       break;
@@ -254,7 +267,6 @@ WebSocketHandlePacket
   jsonDoc = json_parse((const json_char*)InData, (size_t)InDataSize);
 
   packetType = JSONIFGetString(jsonDoc, "packettype");
-  printf("%s %d : %s\n", __FILE__, __LINE__, packetType);
 
   if ( StringEqual(packetType, "request") ) {
     WebSocketHandleRequest(InConnection, jsonDoc);
@@ -312,6 +324,7 @@ WebSocketHandleInit
   JSONOutDestroy(object);
 }
 
+
 /*****************************************************************************!
  * Function : WebSocketFrameSend
  *****************************************************************************/
@@ -331,4 +344,58 @@ WebSocketJSONSendAll
 (JSONOut* InJSON)
 {
   
+}
+
+/*****************************************************************************!
+ * Function : WebSocketSendCreate
+ *****************************************************************************/
+void
+WebSocketSendCreate
+(JSONOut* InJSON)
+{
+  string                                s;
+  JSONOut*                              object;
+
+  object = JSONOutCreateObject(NULL);
+
+  JSONOutObjectAddObjects(object,
+                          JSONOutCreateString("packettype", "request"),
+                          JSONOutCreateInt("packetid", 1),
+                          JSONOutCreateInt("time", (int)time(NULL)),
+                          JSONOutCreateString("type", "create"),
+                          JSONOutCreateString("status", "OK"),
+                          InJSON,                          
+                          NULL);
+  
+  s = JSONOutToString(object, 0);
+  printf("%s %d : %s\n", __FILE__, __LINE__, s);
+  // WebSocketFrameSend(, s, strlen(s));
+  FreeMemory(s);
+  JSONOutDestroy(object);  
+}
+
+/*****************************************************************************!
+ * Function : WebSocketDisplayConnections
+ *****************************************************************************/
+void
+WebSocketDisplayConnections
+()
+{
+  WebConnection*                        connection;
+  struct tm*                            ts;
+  
+  printf("%sACTIVE WEB CONNECTIONS%s\n", ColorBrightGreen, ColorReset);
+  printf("%s                       ADDRESS                TIME%s\n", ColorBoldYellowReverse, ColorReset);
+  for ( connection = WebSocketConnections->first ; connection ; connection = connection->next ) {
+    ts = localtime(&connection->lastReceiveTime);
+
+    printf("%s  %22s:%-5d%s %s%02d/%02d/%04d %02d:%02d:%02d%s\n", 
+           ColorBoldBlue, 
+           inet_ntoa(connection->connection->sa.sin.sin_addr), 
+	   connection->connection->sa.sin.sin_port,
+	   ColorReset,
+           ColorBoldCyan, 
+           ts->tm_mon + 1, ts->tm_mday, ts->tm_year + 1900,
+           ts->tm_hour, ts->tm_min, ts->tm_sec, ColorReset);
+  }
 }

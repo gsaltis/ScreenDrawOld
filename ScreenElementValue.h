@@ -19,10 +19,21 @@
  * Local Headers
  *****************************************************************************/
 #include "GeneralUtilities/String.h"
+#include "JSONOut.h"
 
 /*****************************************************************************!
  * Exported Macros
  *****************************************************************************/
+
+/*****************************************************************************!
+ * Exported Type : ScreenElementValueDimensionType
+ *****************************************************************************/
+typedef enum ScreenElementValueDimensionType
+{
+ ScreenElementValueDimensionTypeNone,
+ ScreenElementValueDimensionTypeInt,
+ ScreenElementValueDimensionTypeFloat
+} ScreenElementValueDimensionType;
 
 /*****************************************************************************!
  * Exported Type : ScreenElementValueColorType
@@ -58,17 +69,24 @@ struct _ScreenElementValue
     uint32_t                            valueInt;
     string                              valueString;
     struct {
-      float                             dimensionValue;
-      string                            dimensionType;
+      ScreenElementValueDimensionType   dimensionType;
+      union {
+        float                           dimensionFloat;
+        int                             dimensionInt;
+      } value;
+      string                            dimensionSuffix;
+      
     }                                   valueDimension;
-    union {
+    struct {
       ScreenElementValueColorType       colorType;
-      string                            colorString;
-      struct {
-        uint32_t                        red;
-        uint32_t                        green;
-        uint32_t                        blue;
-      } rgb;
+      union {
+        string                          colorString;
+        struct {
+          uint32_t                      red;
+          uint32_t                      green;
+          uint32_t                      blue;
+        } rgb;
+      };
     }                                   valueColor;
   };  
 };
@@ -81,6 +99,14 @@ typedef struct _ScreenElementValue ScreenElementValue;
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
+ScreenElementValue*
+ScreenElementValueCreateColor
+(string InTag, string InValue);
+
+JSONOut*
+ScreenElementValueToJSON
+(ScreenElementValue* InValue);
+
 ScreenElementValue*
 ScreenElementValueCreateColorRGB
 (string InTag, int InRed, int InGreen, int InBlue);

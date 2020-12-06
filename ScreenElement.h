@@ -59,6 +59,10 @@ typedef struct _ScreenElement ScreenElement;
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
+string
+ScreenElementGenerateName
+();
+
 JSONOut*
 ScreenElementToJSON
 (ScreenElement* InElement);

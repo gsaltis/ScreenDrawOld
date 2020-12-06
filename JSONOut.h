@@ -83,6 +83,10 @@ typedef struct _JSONOutObject JSONOutObject;
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
+void
+JSONOutSetName
+(JSONOut* InJSON, string InName);
+
 string
 JSONOutToString
 (JSONOut* InObject, uint32_t InIndent);

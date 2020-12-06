@@ -6,7 +6,7 @@ LINK_FLAGS				= -g
 LIB_FLAGS				= -LGeneralUtilities -LRPiBaseModules
 
 TARGET					= screendraw
-LIBS					= -lpthread -lm -lutils -llinenoise -lmongoose -ljson
+LIBS					= -lpthread -lm -lutils -llinenoise -lmongoose -ljson -luuid
 OBJS					= $(sort				\
 					    main.o                              \
 					    UserInputThread.o			\
@@ -26,10 +26,10 @@ OBJS					= $(sort				\
 					  @echo [CC] $@
 					  @$(CC) $(CC_FLAGS) $<
 
-include					  depends.mk
-
 .PHONY					: all
 all					: $(TARGET)
+
+include					  depends.mk
 
 $(TARGET)				: $(OBJS)
 					  @echo [LD] $@

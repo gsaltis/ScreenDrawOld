@@ -457,3 +457,20 @@ JSONOutArrayDestroy
   FreeMemory(InArray);
 }
 
+/*****************************************************************************!
+ * Function : JSONOutSetName
+ *****************************************************************************/
+void
+JSONOutSetName
+(JSONOut* InJSON, string InName)
+{
+  if ( NULL == InJSON || NULL == InName ) {
+    return;
+  }
+
+  if ( InJSON->tag ) {
+    FreeMemory(InJSON->tag);
+  }
+
+  InJSON->tag = StringCopy(InName);
+}

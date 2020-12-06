@@ -36,6 +36,14 @@
  * Exported Functions
  *****************************************************************************/
 void
+WebSocketDisplayConnections
+();
+
+void
+WebSocketSendCreate
+(JSONOut* InJSON);
+
+void
 WebSocketJSONSendAll
 (JSONOut* InJSON);
 
