@@ -129,7 +129,7 @@ ScreenElementValueCreateString
 (string InTag, string InValue)
 {
   ScreenElementValue*                   value;
-  value = ScreenElementValueCreate(ScreenElementValueTypeInt, InTag);
+  value = ScreenElementValueCreate(ScreenElementValueTypeString, InTag);
   value->valueString = StringCopy(InValue);
   return value;
 }

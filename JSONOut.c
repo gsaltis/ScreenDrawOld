@@ -360,8 +360,10 @@ JSONOutToString
       s = StringConcatTo(s, "[\n");
       for ( i = 0 ; i < InObject->valueArray->count ; i++ ) {
         s2 = JSONOutToString(InObject->valueArray->objects[i], InIndent + 2);
+        s = StringConcatTo(s, "{ ");
         s = StringConcatTo(s, s2);
         FreeMemory(s2);
+        s = StringConcatTo(s, " }");
         if ( i + 1 < InObject->valueArray->count ) {
           s = StringConcatTo(s, ",");
         }
@@ -391,9 +393,6 @@ JSONOutToString
   FreeMemory(indentString);
   return s;
 }
-
-
-
 
 /*****************************************************************************!
  * Function : JSONOutArrayCreate

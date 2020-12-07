@@ -20,7 +20,8 @@ ScreenElementValue.o: ScreenElementValue.c ScreenElementValue.h \
 UserInputThread.o: UserInputThread.c UserInputThread.h \
  GeneralUtilities/String.h RPiBaseModules/linenoise.h \
  GeneralUtilities/ANSIColors.h ScreenElement.h ScreenElementValue.h \
- JSONOut.h GeneralUtilities/MemoryManager.h
+ JSONOut.h GeneralUtilities/MemoryManager.h WebSocketServer.h \
+ RPiBaseModules/mongoose.h main.h Screen.h
 Version.o: Version.c Version.h
 WebConnection.o: WebConnection.c WebConnection.h \
  RPiBaseModules/mongoose.h GeneralUtilities/MemoryManager.h \
@@ -28,4 +29,4 @@ WebConnection.o: WebConnection.c WebConnection.h \
 WebSocketServer.o: WebSocketServer.c WebSocketServer.h \
  RPiBaseModules/mongoose.h JSONOut.h GeneralUtilities/String.h \
  GeneralUtilities/ANSIColors.h GeneralUtilities/MemoryManager.h \
- RPiBaseModules/json.h JSONIF.h HTTPServer.h
+ RPiBaseModules/json.h JSONIF.h HTTPServer.h WebConnection.h

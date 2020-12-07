@@ -4,6 +4,7 @@
  * PROJECT      : 
  * COPYRIGHT    : Copyright (C) 2020 by Gregory R Saltis
  *****************************************************************************/
+
 /*****************************************************************************!
  * Global Headers
  *****************************************************************************/
@@ -41,6 +42,10 @@
 /*****************************************************************************!
  * Local Functions
  *****************************************************************************/
+uint32_t
+WebSocketGenerateID
+();
+
 void
 WebSocketHandlePacket
 (struct mg_connection* InConnection, string InData, int InDataSize);
@@ -60,6 +65,9 @@ WebSocketFrameSend
 /*****************************************************************************!
  * Local Data
  *****************************************************************************/
+static uint32_t
+WebSocketID;
+
 static WebConnectionList*
 WebSocketConnections;
 
@@ -100,6 +108,7 @@ WebSocketServerInitialize
   WebSocketConnections = WebConnectionListCreate();
   WebSocketPortAddress = WebSocketPortAddressDefault;
   WebSocketWWWDirectory = WebSocketWWWDirectoryDefault;
+  WebSocketID           = 0;
 }
 
 /*****************************************************************************!
@@ -286,7 +295,7 @@ WebSocketHandleRequest
   string                                type;
 
   type = JSONIFGetString(InJSONDoc, "type");
-
+  WebSocketID = JSONIFGetInt(InJSONDoc, "packetid");
   if ( StringEqual(type, "init") ) {
     WebSocketHandleInit(InConnection, InJSONDoc);
   }
@@ -343,7 +352,25 @@ void
 WebSocketJSONSendAll
 (JSONOut* InJSON)
 {
+  uint16_t                              sl;
+  WebConnection*                        connection;
+  string                                s;
+  if ( NULL == InJSON ) {
+    return;
+  }
   
+  if ( WebSocketConnections == NULL || WebSocketConnections->first == NULL ) {
+    return;
+  }
+  s = JSONOutToString(InJSON, 0);
+  if ( NULL == s ) {
+    return;
+  }
+  sl = (uint16_t)strlen(s);
+  for ( connection = WebSocketConnections->first; connection; connection = connection->next ) {
+    WebSocketFrameSend(connection->connection, s, sl);
+  }
+  FreeMemory(s);
 }
 
 /*****************************************************************************!
@@ -353,24 +380,19 @@ void
 WebSocketSendCreate
 (JSONOut* InJSON)
 {
-  string                                s;
   JSONOut*                              object;
 
   object = JSONOutCreateObject(NULL);
 
   JSONOutObjectAddObjects(object,
                           JSONOutCreateString("packettype", "request"),
-                          JSONOutCreateInt("packetid", 1),
+                          JSONOutCreateInt("packetid", WebSocketGenerateID()),
                           JSONOutCreateInt("time", (int)time(NULL)),
                           JSONOutCreateString("type", "create"),
                           JSONOutCreateString("status", "OK"),
                           InJSON,                          
                           NULL);
-  
-  s = JSONOutToString(object, 0);
-  printf("%s %d : %s\n", __FILE__, __LINE__, s);
-  // WebSocketFrameSend(, s, strlen(s));
-  FreeMemory(s);
+  WebSocketJSONSendAll(object);
   JSONOutDestroy(object);  
 }
 
@@ -392,10 +414,21 @@ WebSocketDisplayConnections
     printf("%s  %22s:%-5d%s %s%02d/%02d/%04d %02d:%02d:%02d%s\n", 
            ColorBoldBlue, 
            inet_ntoa(connection->connection->sa.sin.sin_addr), 
-	   connection->connection->sa.sin.sin_port,
-	   ColorReset,
+           connection->connection->sa.sin.sin_port,
+           ColorReset,
            ColorBoldCyan, 
            ts->tm_mon + 1, ts->tm_mday, ts->tm_year + 1900,
            ts->tm_hour, ts->tm_min, ts->tm_sec, ColorReset);
   }
+}
+
+/*****************************************************************************!
+ * Function : WebSocketGenerateID
+ *****************************************************************************/
+uint32_t
+WebSocketGenerateID
+()
+{
+  WebSocketID++;
+  return WebSocketID;
 }

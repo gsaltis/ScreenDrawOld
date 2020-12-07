@@ -212,14 +212,17 @@ JSONOut*
 ScreenElementBoxToJSON
 (ScreenElement* InElement)
 {
+  JSONOut*                              values;
   int                                   i;
   JSONOut*                              jsonout;
 
   jsonout = JSONOutCreateObject(NULL);
   JSONOutObjectAddObject(jsonout, JSONOutCreateString("type", "box"));
   JSONOutObjectAddObject(jsonout, JSONOutCreateString("name", InElement->name));
+  values = JSONOutCreateObject("values");
+  JSONOutObjectAddObject(jsonout, values);
   for (i = 0; i < InElement->valuesCount; i++) {
-    JSONOutObjectAddObject(jsonout, ScreenElementValueToJSON(InElement->values[i]));
+    JSONOutObjectAddObject(values, ScreenElementValueToJSON(InElement->values[i]));
   }
   return jsonout;
 }

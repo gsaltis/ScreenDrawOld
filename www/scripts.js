@@ -130,9 +130,65 @@ WebSocketIFHandlePacket
 (InData)
 {
   var                                   packet;
+  var                                   packettype;
   
   packet = JSON.parse(InData);
-  console.log(packet);
+  n = packet.packetid;
+  if ( n > 0 ) {
+    WebSocketIFID = n;
+  }
+
+  packettype = packet.packettype;
+  if ( packettype == "request" ) {
+    WebSocketIFHandleRequest(packet);
+  }
+}
+
+/*****************************************************************************!
+ * Function : WebSocketIFHandleRequest
+ *****************************************************************************/
+function
+WebSocketIFHandleRequest
+(InPacket)
+{
+  if ( InPacket.type == "create" ) {
+    WebSocketIFHandleCreate(InPacket.body);
+  }
+}
+
+/*****************************************************************************!
+ * Function : WebSocketIFHandleCreate
+ *****************************************************************************/
+function
+WebSocketIFHandleCreate
+(InBody)
+{
+
+  console.log(InBody);
+  if ( InBody.type == "box" ) {
+    WebSocketCreateBox(InBody);
+  }
+}
+
+/*****************************************************************************!
+ * Function : WebSocketCreateBox
+ *****************************************************************************/
+function
+WebSocketCreateBox
+(InBody)
+{
+  var                                   value;
+  var                                   values;
+  var                                   mainarea;
+
+  values = InBody.values;
+  mainarea = document.getElementById("MainDrawArea");
+  div = document.createElement("div");
+
+  for ( value in values ) {
+    div.style[value] = values[value];
+  }
+  mainarea.appendChild(div);
 }
 
 /*****************************************************************************!
