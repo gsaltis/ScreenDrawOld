@@ -44,6 +44,10 @@ typedef struct _Screen Screen;
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
+ScreenElement*
+ScreenFindElementByName
+(Screen* InScreen, string InName);
+
 void
 ScreenAddElement
 (Screen* InScreen, ScreenElement* InElement);

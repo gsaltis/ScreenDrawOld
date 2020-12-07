@@ -259,3 +259,51 @@ ScreenElementGenerateName
   ScreenElementNameID++;
   return StringCopy(s);
 }
+
+/*****************************************************************************!
+ * Function : ScreenElementDisplay
+ *****************************************************************************/
+void
+ScreenElementDisplay
+(ScreenElement* InElement, int InIndent)
+{
+  string                                s2;
+  string                                s;
+  if ( NULL == InElement ) {
+    return;
+  }
+  if ( InIndent > 0 ) {
+    s = StringFill(' ', InIndent);
+  } else {
+    s = (string)GetMemory(1);
+    *s = 0x00;
+  }
+  printf("%s", s);
+  s2 = ScreenElementTypeToString(InElement->type);
+  printf("%10s %35s\n", s2, InElement->name);
+  FreeMemory(s);
+}
+
+/*****************************************************************************!
+ * Function : ScreenElementTypeToString
+ *****************************************************************************/
+string
+ScreenElementTypeToString
+(ScreenElementType InType)
+{
+  switch (InType) {
+    case ScreenElementTypeNone : {
+      return "None";
+    }
+    case ScreenElementTypeBox : {
+      return "Box";
+    }
+    case ScreenElementTypeText : {
+      return "Text";
+    }
+    case ScreenElementTypeInput : {
+      return "Input";
+    }
+  }
+  return "";
+}

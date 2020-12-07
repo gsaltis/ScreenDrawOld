@@ -60,6 +60,14 @@ typedef struct _ScreenElement ScreenElement;
  * Exported Functions
  *****************************************************************************/
 string
+ScreenElementTypeToString
+(ScreenElementType InType);
+
+void
+ScreenElementDisplay
+(ScreenElement* InElement, int InIndent);
+
+string
 ScreenElementGenerateName
 ();
 

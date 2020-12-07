@@ -94,3 +94,23 @@ ScreenAddElement
   InScreen->elements = elements;
   InScreen->elementsCount = n;
 }
+
+/*****************************************************************************!
+ * Function : ScreenFindElementByName
+ *****************************************************************************/
+ScreenElement*
+ScreenFindElementByName
+(Screen* InScreen, string InName)
+{
+  int                                   i;
+  if ( NULL == InScreen || NULL == InName ) {
+    return NULL;
+  }
+
+  for (i = 0; i < InScreen->elementsCount; i++) {
+    if ( StringEqual(InScreen->elements[i]->name, InName) ) {
+      return InScreen->elements[i];
+    }
+  }
+  return NULL;
+}

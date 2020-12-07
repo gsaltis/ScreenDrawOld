@@ -36,6 +36,14 @@
  * Local Functions
  *****************************************************************************/
 void
+UserInputProcessCommandShowScreen
+(StringList* InCommands);
+
+void
+UserInputProcessCommandShow
+(StringList* InCommands);
+
+void
 UserInputProcessCommandConnections
 (StringList* InCommands);
 
@@ -149,7 +157,7 @@ UserInputParseCommandLine
           break;
         }
           
-        //!
+          //!
         case InStart : {
           if ( *start == 0x00 ) {
             state = InDone;
@@ -177,7 +185,7 @@ UserInputParseCommandLine
           state = InToken;
           break;
         }
-        //!
+          //!
         case InSpaces : {
           if ( *start == 0x00 ) {
             state = InDone;
@@ -206,7 +214,7 @@ UserInputParseCommandLine
           break;
         }
 
-        //!
+          //!
         case InToken : {
           if ( *end == 0x00 ) {
             n = end - start;
@@ -228,7 +236,7 @@ UserInputParseCommandLine
           break;
         }
 
-        //!
+          //!
         case InSingleQuotedString : {
           if (*end == '\\' ) {
             end++;
@@ -281,7 +289,7 @@ UserInputParseCommandLine
           break;
         }
           
-        //!
+          //!
         case InDoubleQuotedString : {
           if (*end == '\\' ) {
             end++;
@@ -376,6 +384,11 @@ UserInputProcessCommand
     UserInputProcessCommandConnections(InCommands);
     return;
   }
+
+  if ( StringEqualNoCase(command, "show") ) {
+    UserInputProcessCommandShow(InCommands);
+    return;
+  }
   fprintf(stderr, "%s\"%s\"%s is not a valid command\n", ColorBrightRed, command, ColorReset);
 }
 
@@ -463,6 +476,12 @@ UserInputProcessCommandCreateBox
     name = StringCopy(s);
     n++;
   }
+  element = ScreenFindElementByName(mainScreen, name);
+  if ( element != NULL ) {
+    printf("%sAn element named \"%s\" exists%s\n", ColorRed, name, ColorReset);
+    FreeMemory(name);
+    return;
+  }
   element = ScreenElementCreateBox(name);
   FreeMemory(name);
 
@@ -501,4 +520,44 @@ UserInputProcessCommandConnections
 (StringList* InCommands)
 {
   WebSocketDisplayConnections();
+}
+
+/*****************************************************************************!
+ * Function : UserInputProcessCommandShow
+ *****************************************************************************/
+void
+UserInputProcessCommandShow
+(StringList* InCommands)
+{
+  if ( NULL == InCommands ) {
+    return;
+  }
+  if ( InCommands->stringCount < 2 ) {
+    return;
+  }
+
+  if ( StringEqualNoCase(InCommands->strings[1], "screen") ) {
+    UserInputProcessCommandShowScreen(InCommands);
+    return;
+  }
+}
+
+/*****************************************************************************!
+ * Function : UserInputProcessCommandShowScreen
+ *****************************************************************************/
+void
+UserInputProcessCommandShowScreen
+(StringList* InCommands)
+{
+  int                                   i;
+  if ( NULL == InCommands ) {
+    return;
+  }
+
+  printf("%sSCREENS%s\n", ColorBrightGreen, ColorReset);
+  printf("%s%s%s\n", ColorGreen, mainScreen->name ? mainScreen->name : "No Name", ColorReset);
+  printf("%s  VALUES%s\n", ColorBoldYellowReverse, ColorReset);
+  for ( i = 0; i < mainScreen->elementsCount; i++ ) {
+    ScreenElementDisplay(mainScreen->elements[i], 0);
+  }
 }
