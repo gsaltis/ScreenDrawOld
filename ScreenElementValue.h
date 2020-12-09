@@ -75,7 +75,6 @@ struct _ScreenElementValue
         int                             dimensionInt;
       } value;
       string                            dimensionSuffix;
-      
     }                                   valueDimension;
     struct {
       ScreenElementValueColorType       colorType;
@@ -93,12 +92,50 @@ struct _ScreenElementValue
 typedef struct _ScreenElementValue ScreenElementValue;
 
 /*****************************************************************************!
+ * Exported Type : ScreenElementValueList
+ *****************************************************************************/
+struct _ScreenElementValueList
+{
+  ScreenElementValue**                  values;
+  int                                   valuesCount;
+};
+typedef struct _ScreenElementValueList ScreenElementValueList;
+
+/*****************************************************************************!
  * Exported Data
  *****************************************************************************/
 
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
+ScreenElementValue*
+ScreenElementValueCopy
+(ScreenElementValue* InValue);
+
+bool
+ScreenElementValueSetValue
+(ScreenElementValue* InElement, string InValue);
+
+ScreenElementValue*
+ScreenElementValueListFindByName
+(ScreenElementValueList* InValues, string InName);
+
+void
+ScreenElementValueListRemoveByValue
+(ScreenElementValueList* InValues, ScreenElementValue* InValue, bool InDestroyValue);
+
+void
+ScreenElementValueListRemoveByIndex
+(ScreenElementValueList* InValues, int InIndex, bool InDestroyValue);
+
+void
+ScreenElementValueListDestroy
+(ScreenElementValueList* InValueList);
+
+ScreenElementValueList*
+ScreenElementValueListCreate
+();
+
 ScreenElementValue*
 ScreenElementValueCreateColor
 (string InTag, string InValue);
@@ -134,5 +171,9 @@ ScreenElementValueDestroy
 ScreenElementValue*
 ScreenElementValueCreate
 (ScreenElementValueType InType, string InTag);
+
+void
+ScreenElementValueListAppend
+(ScreenElementValueList* InValueList, ScreenElementValue* InValue);
 
 #endif /* _screenelementvalue_h_*/

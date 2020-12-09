@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 screendraw
 *~
-#*
+\#*
 GeneralUtilities/
 RPiBaseModules/
 TAGS

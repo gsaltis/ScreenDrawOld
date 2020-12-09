@@ -54,6 +54,7 @@ ScreenElementCreate
   ScreenElement*                        element;
 
   element = (ScreenElement*)GetMemory(sizeof(ScreenElement));
+  element->values = ScreenElementValueListCreate();
   memset(element, 0x00, sizeof(ScreenElement));
   element->type = InType;
   if ( InName ) {
@@ -69,14 +70,11 @@ void
 ScreenElementDestroy
 (ScreenElement* InElement)
 {
-  int                                   i;
   if ( NULL == InElement ) {
     return;
   }
 
-  for (i = 0; i < InElement->valuesCount; i++) {
-    ScreenElementValueDestroy(InElement->values[i]);
-  }
+  ScreenElementValueListDestroy(InElement->values);
   switch (InElement->type) {
     case ScreenElementTypeNone : {
       
@@ -111,25 +109,11 @@ void
 ScreenElementAddValue
 (ScreenElement* InElement, ScreenElementValue* InValue)
 {
-  int                                   i;
-  ScreenElementValue**                  values;
-  int                                   n;
   if ( NULL == InElement || NULL == InValue ) {
     return;
   }
 
-  n = InElement->valuesCount + 1;
-
-  values = (ScreenElementValue**)GetMemory(sizeof(ScreenElementValue*) * n);
-  for (i = 0; i < InElement->valuesCount; i++) {
-    values[i] = InElement->values[i];
-  }
-  if ( InElement->values ) {
-    FreeMemory(InElement->values);
-  }
-  values[InElement->valuesCount] = InValue;
-  InElement->values = values;
-  InElement->valuesCount = n;
+  ScreenElementValueListAppend(InElement->values, InValue);
 }
 
 /*****************************************************************************!
@@ -221,8 +205,8 @@ ScreenElementBoxToJSON
   JSONOutObjectAddObject(jsonout, JSONOutCreateString("name", InElement->name));
   values = JSONOutCreateObject("values");
   JSONOutObjectAddObject(jsonout, values);
-  for (i = 0; i < InElement->valuesCount; i++) {
-    JSONOutObjectAddObject(values, ScreenElementValueToJSON(InElement->values[i]));
+  for (i = 0; i < InElement->values->valuesCount; i++) {
+    JSONOutObjectAddObject(values, ScreenElementValueToJSON(InElement->values->values[i]));
   }
   return jsonout;
 }

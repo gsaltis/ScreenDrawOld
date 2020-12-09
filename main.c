@@ -31,6 +31,9 @@
 /*****************************************************************************!
  * Local Data
  *****************************************************************************/
+ScreenElementValueSetList*
+mainScreenElementValueSets;
+
 Screen*
 mainScreen = NULL;
 
@@ -63,6 +66,10 @@ void
 MainInitialize
 ();
 
+void
+MainCreateScreenElementValuesSet
+();
+
 /*****************************************************************************!
  * Function : main
  *****************************************************************************/
@@ -72,6 +79,7 @@ main
 {
   MainInitialize();
   MainCreateScreen();
+  MainCreateScreenElementValuesSet();
   MainDisplayStartupInfo();
   
   MainCreateThreads();
@@ -141,3 +149,24 @@ MainCreateScreen
   mainScreen = ScreenCreate(mainScreenName);
 }
 
+
+/*****************************************************************************!
+ * Function : MainCreateScreenElementValuesSet
+ *****************************************************************************/
+void
+MainCreateScreenElementValuesSet
+()
+{
+  ScreenElementValue*                   value;
+  ScreenElementValueSet*                boxSet;
+
+  mainScreenElementValueSets = ScreenElementValueSetListCreate();
+  boxSet = ScreenElementValueSetCreate("box");
+
+  ScreenElementValueSetListAppend(mainScreenElementValueSets, boxSet);
+  value = ScreenElementValueCreateDimension("top", "20px");
+  ScreenElementValueSetAppend(boxSet, value);
+
+  value = ScreenElementValueCreateDimension("left", "20px");
+  ScreenElementValueSetAppend(boxSet, value);
+}

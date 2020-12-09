@@ -1,10 +1,10 @@
 /*****************************************************************************
- * FILE NAME    : main.h
- * DATE         : December 01 2020
+ * FILE NAME    : ScreenColor.h
+ * DATE         : December 08 2020
  * COPYRIGHT    : Copyright (C) 2020 by Gregory R Saltis
  *****************************************************************************/
-#ifndef _main_h_
-#define _main_h_
+#ifndef _screencolor_h_
+#define _screencolor_h_
 
 /*****************************************************************************!
  * Global Headers
@@ -18,25 +18,47 @@
 /*****************************************************************************!
  * Local Headers
  *****************************************************************************/
-#include "Screen.h"
-#include "ScreenElementValueSet.h"
+#include "GeneralUtilities/String.h"
 
 /*****************************************************************************!
  * Exported Macros
  *****************************************************************************/
-#define PROGRAM_NAME            "screendraw"
+
+/*****************************************************************************!
+ * Exported Type : ScreenColorType
+ *****************************************************************************/
+typedef enum ScreenColorType
+{
+ ScreenColorTypeNone,
+ ScreenColorTypeString,
+ ScreenColorTypeRGB
+
+} ScreenColorType;
+
+/*****************************************************************************!
+ * Exported Type : ScreenColor
+ *****************************************************************************/
+struct _ScreenColor
+{
+  ScreenColorType                       type;
+  union {
+    string                              colorString;
+    struct {
+      int                               red;
+      int                               green;
+      int                               color;
+      float                             alpha;
+    } rgba;
+  } color;
+};
+typedef struct _ScreenColor ScreenColor;
 
 /*****************************************************************************!
  * Exported Data
  *****************************************************************************/
-extern Screen*
-mainScreen;
-
-extern ScreenElementValueSetList*
-mainScreenElementValueSets;
 
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
 
-#endif /* _main_h_*/
+#endif /* _screencolor_h_*/

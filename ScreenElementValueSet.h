@@ -1,10 +1,10 @@
 /*****************************************************************************
- * FILE NAME    : ScreenElement.h
- * DATE         : December 03 2020
+ * FILE NAME    : ScreenElementValueSet.h
+ * DATE         : December 08 2020
  * COPYRIGHT    : Copyright (C) 2020 by Gregory R Saltis
  *****************************************************************************/
-#ifndef _screenelement_h_
-#define _screenelement_h_
+#ifndef _screenelementvalueset_h_
+#define _screenelementvalueset_h_
 
 /*****************************************************************************!
  * Global Headers
@@ -18,38 +18,32 @@
 /*****************************************************************************!
  * Local Headers
  *****************************************************************************/
+#include "GeneralUtilities/String.h"
 #include "ScreenElementValue.h"
-#include "JSONOut.h"
 
 /*****************************************************************************!
  * Exported Macros
  *****************************************************************************/
 
 /*****************************************************************************!
- * Exported Type : ScreenElementType
+ * Exported Type : ScreenElementValueSet
  *****************************************************************************/
-typedef enum ScreenElementType
+struct _ScreenElementValueSet
 {
- ScreenElementTypeNone                  = 0,
- ScreenElementTypeBox,
- ScreenElementTypeText,
- ScreenElementTypeInput,
-} ScreenElementType;
-
-/*****************************************************************************!
- * Exported Type : ScreenElement
- *****************************************************************************/
-struct _ScreenElement
-{
-  ScreenElementType                     type;
   string                                name;
-  union
-  {
-    string                              valueText;
-  };
   ScreenElementValueList*               values;
 };
-typedef struct _ScreenElement ScreenElement;
+typedef struct _ScreenElementValueSet ScreenElementValueSet;
+
+/*****************************************************************************!
+ * Exported Type : ScreenElementValueSetList
+ *****************************************************************************/
+struct _ScreenElementValueSetList
+{
+  ScreenElementValueSet**               sets;
+  int                                   setsCount;
+};
+typedef struct _ScreenElementValueSetList ScreenElementValueSetList;
 
 /*****************************************************************************!
  * Exported Data
@@ -58,44 +52,36 @@ typedef struct _ScreenElement ScreenElement;
 /*****************************************************************************!
  * Exported Functions
  *****************************************************************************/
-string
-ScreenElementTypeToString
-(ScreenElementType InType);
+void
+ScreenElementValueSetAppend
+(ScreenElementValueSet* InSet, ScreenElementValue* InValue);
+
+ScreenElementValue*
+ScreenElementValueSetFindByName
+(ScreenElementValueSet* InSet, string InName);
+
+ScreenElementValueSet*
+ScreenElementValueSetListFindByName
+(ScreenElementValueSetList* InList, string InName);
 
 void
-ScreenElementDisplay
-(ScreenElement* InElement, int InIndent);
+ScreenElementValueSetListAppend
+(ScreenElementValueSetList* InSets, ScreenElementValueSet* InSet);
 
-string
-ScreenElementGenerateName
+void
+ScreenElementValueSetListDestroy
+(ScreenElementValueSetList* InSets);
+
+ScreenElementValueSetList*
+ScreenElementValueSetListCreate
 ();
 
-JSONOut*
-ScreenElementToJSON
-(ScreenElement* InElement);
+void
+ScreenElementValueSetDestroy
+(ScreenElementValueSet* InSet);
 
-ScreenElement*
-ScreenElementCreateInput
+ScreenElementValueSet*
+ScreenElementValueSetCreate
 (string InName);
 
-ScreenElement*
-ScreenElementCreateText
-(string InName, string InText);
-
-ScreenElement*
-ScreenElementCreateBox
-(string InName);
-
-void
-ScreenElementAddValue
-(ScreenElement* InElement, ScreenElementValue* InValue);
-
-void
-ScreenElementDestroy
-(ScreenElement* InElement);
-
-ScreenElement*
-ScreenElementCreate
-(ScreenElementType InType, string InName);
-
-#endif /* _screenelement_h_*/
+#endif /* _screenelementvalueset_h_*/

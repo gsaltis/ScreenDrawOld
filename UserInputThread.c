@@ -36,6 +36,26 @@
  * Local Functions
  *****************************************************************************/
 void
+UserInputProcessCommandShowSets
+(StringList* InCommands);
+
+void
+UserInputDisplayErrorMessage
+(string InMessage);
+
+void
+UserInputDisplayMessage
+(string InMessage);
+
+void
+UserInputProcessCommandSetValue
+(StringList* InCommands);
+
+void
+UserInputProcessCommandSet
+(StringList* InCommands);
+
+void
 UserInputProcessCommandShowScreen
 (StringList* InCommands);
 
@@ -389,6 +409,11 @@ UserInputProcessCommand
     UserInputProcessCommandShow(InCommands);
     return;
   }
+
+  if ( StringEqualNoCase(command, "set") ) {
+    UserInputProcessCommandSet(InCommands);
+    return;
+  }
   fprintf(stderr, "%s\"%s\"%s is not a valid command\n", ColorBrightRed, command, ColorReset);
 }
 
@@ -410,8 +435,9 @@ UserInputProcessCommandHelp
 (StringList* InCommands)
 {
   printf("%sCOMMANDS%s\n\n", ColorGreen, ColorReset);
-  printf("  %squit%s   : %sQuit this qpplication%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
-  printf("  %screate%s : %sCreate a new object%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
+  printf("  %squit%s                 : %sQuit this qpplication%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
+  printf("  %screate%s               : %sCreate a new object%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
+  printf("  %sset value type value%s : %sSet a Type Value%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
   printf("  %shelp%s   : %sDisplay this message%s\n", ColorGreen, ColorReset, ColorYellow, ColorReset);
 }
 
@@ -540,6 +566,10 @@ UserInputProcessCommandShow
     UserInputProcessCommandShowScreen(InCommands);
     return;
   }
+  if ( StringEqualNoCase(InCommands->strings[1], "sets") ) {
+    UserInputProcessCommandShowSets(InCommands);
+    return;
+  }
 }
 
 /*****************************************************************************!
@@ -561,3 +591,124 @@ UserInputProcessCommandShowScreen
     ScreenElementDisplay(mainScreen->elements[i], 0);
   }
 }
+
+/*****************************************************************************!
+ * Function : UserInputProcessCommandSet
+ *****************************************************************************/
+void
+UserInputProcessCommandSet
+(StringList* InCommands)
+{
+  string                                command;
+  if ( NULL == InCommands ) {
+    return;
+  }
+  if ( InCommands->stringCount < 2 ) {
+    return;
+  }
+  command = InCommands->strings[1];
+  if ( StringEqualNoCase(command, "value") ) {
+    UserInputProcessCommandSetValue(InCommands);
+    return;
+  }
+}
+
+/*****************************************************************************!
+ * Function : UserInputProcessCommandSetValue
+ *****************************************************************************/
+void
+UserInputProcessCommandSetValue
+(StringList* InCommands)
+{
+  StringList*                           s2;
+  ScreenElementValue*                   value;
+  string                                s;
+  string                                valueString;
+  ScreenElementValueSet*                set;
+  string                                type;
+
+  if ( NULL == InCommands ) {
+    return;
+  }
+  if ( InCommands->stringCount < 4 ) {
+    return;
+  }
+  type = InCommands->strings[2];
+
+  set = ScreenElementValueSetListFindByName(mainScreenElementValueSets, type);
+  if ( NULL == set ) {
+    s = StringMultiConcat("\"", type, "\" is not a recognized type", NULL); 
+    UserInputDisplayErrorMessage(s);
+    FreeMemory(s);
+    return;
+  }
+  valueString = InCommands->strings[3];
+  s2 = StringSplit(valueString, "=", true);
+  if ( NULL == s2 ) {
+    return;
+  }
+  if ( s2->stringCount != 2 ) {
+    s = StringMultiConcat("\"", valueString, "\" is not a valid value");
+    UserInputDisplayErrorMessage(s);
+    FreeMemory(s);
+    return;
+  }
+  value = ScreenElementValueSetFindByName(set, s2->strings[0]);
+  if ( value != NULL ) {
+    s = StringMultiConcat("\"", s2->strings[0], "\" is not a recognized value in set \"", type, "\"", NULL);
+    UserInputDisplayErrorMessage(s);
+    StringListDestroy(s2);
+    FreeMemory(s);
+    return;
+  }
+  if ( ScreenElementValueSetValue(value, s2->strings[1]) ) {
+    s = StringMultiConcat("\"", type, "\" value \"", s2->strings[0], "\" set to \"", s2->strings[1], "\"", NULL);
+    UserInputDisplayMessage(s);
+    StringListDestroy(s2);
+    FreeMemory(s);
+    return;
+  }
+
+  s = StringMultiConcat("\"", type, "\" value \"", s2->strings[0], "\" not set", NULL);
+  UserInputDisplayErrorMessage(s);
+  StringListDestroy(s2);
+  FreeMemory(s);
+}
+
+/*****************************************************************************!
+ * Function : UserInputDisplayErrorMessage
+ *****************************************************************************/
+void
+UserInputDisplayErrorMessage
+(string InMessage)
+{
+  printf("%s%s%s\n", ColorRed, InMessage, ColorReset);
+}
+
+/*****************************************************************************!
+ * Function : UserInputDisplayMessage
+ *****************************************************************************/
+void
+UserInputDisplayMessage
+(string InMessage)
+{
+  printf("%s%s%s\n", ColorGreen, InMessage, ColorReset);
+}
+
+/*****************************************************************************!
+ * Function : UserInputProcessCommandShowSets
+ *****************************************************************************/
+void
+UserInputProcessCommandShowSets
+(StringList* InCommands)
+{
+  int                                   i;
+  printf("%sSETS%s\n", ColorGreen, ColorReset);
+  printf("%s                               NAME  VALUES%s\n", ColorBoldYellowReverse, ColorReset);
+  for (i = 0; i < mainScreenElementValueSets->setsCount; i++) {
+    printf("%s%35s%s  ", ColorBoldBlue, mainScreenElementValueSets->sets[i]->name, ColorReset);
+    printf("%s%6d%s\n", ColorBoldBlue, mainScreenElementValueSets->sets[i]->values->valuesCount, ColorReset);
+  }
+  printf("\n");
+}
+

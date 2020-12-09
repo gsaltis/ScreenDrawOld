@@ -16,6 +16,7 @@ OBJS					= $(sort				\
 					    Screen.o				\
 					    ScreenElement.o			\
 					    ScreenElementValue.o		\
+					    ScreenElementValueSet.o		\
 					    ScreenElementTemplate.o		\
 					    WebConnection.o			\
 					    WebSocketServer.o			\
